@@ -28,6 +28,7 @@
 #include <linux/version.h>
 
 #include <linux/one.h>
+#include <linux/sched/signal.h>
 
 #include "onedev.h"
 #include "entries.h"

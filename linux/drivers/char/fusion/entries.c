@@ -19,14 +19,16 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/version.h>
+#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 0)
+#include <generated/autoconf.h>
+#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 35)
 #include <linux/smp_lock.h>
 #endif
 #include <linux/sched.h>
 #include <linux/time.h>
-#include <linux/version.h>
-
 #include <linux/fusion.h>
+#include <linux/sched/signal.h>
 
 #include "fusiondev.h"
 #include "fusionee.h"

@@ -17,6 +17,11 @@
 #ifdef HAVE_LINUX_CONFIG_H
 #include <linux/config.h>
 #endif
+
+#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 0)
+#include <generated/autoconf.h>
+#endif
+
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>

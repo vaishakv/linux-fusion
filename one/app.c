@@ -26,7 +26,7 @@
 #include <linux/slab.h>
 #include <linux/uio.h>
 #include <linux/sched.h>
-
+#include <linux/sched/signal.h>
 
 #include "app.h"
 #include "fifo.h"

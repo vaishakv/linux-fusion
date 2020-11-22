@@ -19,6 +19,11 @@
 #ifdef HAVE_LINUX_CONFIG_H
 #include <linux/config.h>
 #endif
+
+#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 0)
+#include <generated/autoconf.h>
+#endif
+
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -773,7 +778,7 @@ call_ioctl(FusionDev * dev, Fusionee * fusionee,
                     if (!(execute3.flags & FCEF_DONE)) {
                          if (execute3.flags & FCEF_ERROR) {
                               printk( KERN_ERR "fusion: FUSION_CALL_EXECUTE3 with errorneous call (failed on previous ioctl call), "
-                                               "call id %d, flags 0x%08x, arg %d, length %u, serial %u,  %ld\n",
+                                               "call id %d, flags 0x%08x, arg %d, length %u, serial %u,  %d\n",
                                       execute3.call_id, execute3.flags, execute3.call_arg, execute3.length, execute3.ret_length,
                                       (execute3_bin - (FusionCallExecute3 *) arg) );
                               return -EIO;

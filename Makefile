@@ -32,6 +32,7 @@ ifeq ($(KERNEL_SOURCE), )
   # works for 2.6.32
   KERNEL_SOURCE = $(shell grep '^MAKEARGS := -C ' $(KERNEL_BUILD)/Makefile | cut -d ' ' -f 4)
 endif
+
 ifneq ($(KERNEL_SOURCE), )
   K_VERSION    = $(shell grep '^VERSION =' $(KERNEL_SOURCE)/Makefile | cut -d ' ' -f 3)
   K_PATCHLEVEL = $(shell grep '^PATCHLEVEL =' $(KERNEL_SOURCE)/Makefile | cut -d ' ' -f 3)
@@ -47,7 +48,7 @@ ONE_SUB    = one
 SUBMOD     = drivers/char/fusion
 
 export CONFIG_FUSION_DEVICE=m
-export CONFIG_LINUX_ONE=m
+export CONFIG_LINUX_ONE=n
 
 ifeq ($(DEBUG),yes)
   FUSION_CPPFLAGS += -DFUSION_DEBUG_SKIRMISH_DEADLOCK -DFUSION_ENABLE_DEBUG  
@@ -62,7 +63,7 @@ ifeq ($(shell test -e $(KERNEL_BUILD)/include/linux/config.h && echo yes),yes)
   CPPFLAGS += -DHAVE_LINUX_CONFIG_H
 endif
 
-ifeq ($(K_VERSION),3)
+ifeq ($(K_VERSION),4)
   KMAKEFILE = Makefile-2.6
 else
   KMAKEFILE = Makefile-2.$(K_PATCHLEVEL)
@@ -88,7 +89,8 @@ modules:
 	rm -f $(ONE_SUB)/Makefile
 	cp $(FUSION_SUB)/$(KMAKEFILE) $(FUSION_SUB)/Makefile
 	cp $(ONE_SUB)/$(KMAKEFILE) $(ONE_SUB)/Makefile
-	echo kernel is in $(KERNEL_SOURCE) and version is $(K_SUBLEVEL), building module in $(FUSION_SUB)
+	@echo kernel is in $(KERNEL_SOURCE) and version is $(K_SUBLEVEL), building module in $(FUSION_SUB)
+	@echo Fusion extra flags :: $(FUSION_EXTRAFLAGS)
 	$(MAKE) -C $(KERNEL_BUILD) \
 		$(FUSION_EXTRAFLAGS) \
 		SUBDIRS=`pwd`/$(FUSION_SUB) modules

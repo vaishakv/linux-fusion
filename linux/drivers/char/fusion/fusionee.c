@@ -22,13 +22,19 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/version.h>
+#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 0)
+#include <generated/autoconf.h>
+#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 35)
 #include <linux/smp_lock.h>
 #endif
 #include <linux/sched.h>
 #include <asm/uaccess.h>
-
 #include <linux/fusion.h>
+#include <linux/sched/signal.h>
+
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
 
 #include "call.h"
 #include "fifo.h"
@@ -870,11 +876,12 @@ fusionee_poll( FusionDev                *dev,
                struct file              *file,
                struct poll_table_struct *wait )
 {
+     /* Fix up ISO C90 warning */
+     unsigned int mask = 0;
+
      D_MAGIC_ASSERT( fusionee, Fusionee );
 
      poll_wait( file, &fusionee->wait_receive.queue, wait );
-
-     unsigned int mask = 0;
 
      if (fusionee->packets.count && ((Packet *) fusionee->packets.items)->flush)
           mask |= POLLIN | POLLRDNORM;
@@ -925,7 +932,7 @@ fusionee_kill(FusionDev * dev,
                if (f != fusionee && (!target || target == f->id)) {
                     struct task_struct *p;
 
-#if defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU) || defined(CONFIG_TINY_RCU) || defined(rcu_read_lock)
+#if defined (CONFIG_TREE_SRCU) || defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU) || defined(CONFIG_TINY_RCU) || defined(rcu_read_lock)
                     rcu_read_lock();
 #else
                     read_lock(&tasklist_lock);
@@ -946,7 +953,7 @@ fusionee_kill(FusionDev * dev,
                          }
                     }
 
-#if defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU) || defined(CONFIG_TINY_RCU) || defined(rcu_read_unlock)
+#if defined (CONFIG_TREE_SRCU) || defined(CONFIG_TREE_RCU) || defined(CONFIG_TREE_PREEMPT_RCU) || defined(CONFIG_TINY_RCU) || defined(rcu_read_lock)
                     rcu_read_unlock();
 #else
                     read_unlock(&tasklist_lock);
